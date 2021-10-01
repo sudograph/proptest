@@ -72,66 +72,68 @@ fn contextualize_config(mut result: Config) -> Config {
         }
     }
 
-    result.failure_persistence =
-        Some(Box::new(FileFailurePersistence::default()));
-    for (var, value) in
-        env::vars_os().filter_map(|(k, v)| k.into_string().ok().map(|k| (k, v)))
-    {
-        match var.as_str() {
-            CASES => parse_or_warn(&value, &mut result.cases, "u32", CASES),
-            MAX_LOCAL_REJECTS => parse_or_warn(
-                &value,
-                &mut result.max_local_rejects,
-                "u32",
-                MAX_LOCAL_REJECTS,
-            ),
-            MAX_GLOBAL_REJECTS => parse_or_warn(
-                &value,
-                &mut result.max_global_rejects,
-                "u32",
-                MAX_GLOBAL_REJECTS,
-            ),
-            MAX_FLAT_MAP_REGENS => parse_or_warn(
-                &value,
-                &mut result.max_flat_map_regens,
-                "u32",
-                MAX_FLAT_MAP_REGENS,
-            ),
-            #[cfg(feature = "fork")]
-            FORK => parse_or_warn(&value, &mut result.fork, "bool", FORK),
-            #[cfg(feature = "timeout")]
-            TIMEOUT => {
-                parse_or_warn(&value, &mut result.timeout, "timeout", TIMEOUT)
-            }
-            MAX_SHRINK_TIME => parse_or_warn(
-                &value,
-                &mut result.max_shrink_time,
-                "u32",
-                MAX_SHRINK_TIME,
-            ),
-            MAX_SHRINK_ITERS => parse_or_warn(
-                &value,
-                &mut result.max_shrink_iters,
-                "u32",
-                MAX_SHRINK_ITERS,
-            ),
-            VERBOSE => {
-                parse_or_warn(&value, &mut result.verbose, "u32", VERBOSE)
-            }
-            RNG_ALGORITHM => parse_or_warn(
-                &value,
-                &mut result.rng_algorithm,
-                "RngAlgorithm",
-                RNG_ALGORITHM,
-            ),
+    // TODO some of the APIs below are not available on the IC
+    // result.failure_persistence =
+    //     Some(Box::new(FileFailurePersistence::default()));
+    // for (var, value) in
+    //     env::vars_os().filter_map(|(k, v)| k.into_string().ok().map(|k| (k, v)))
+    // {
+    //     match var.as_str() {
+    //         CASES => parse_or_warn(&value, &mut result.cases, "u32", CASES),
+    //         MAX_LOCAL_REJECTS => parse_or_warn(
+    //             &value,
+    //             &mut result.max_local_rejects,
+    //             "u32",
+    //             MAX_LOCAL_REJECTS,
+    //         ),
+    //         MAX_GLOBAL_REJECTS => parse_or_warn(
+    //             &value,
+    //             &mut result.max_global_rejects,
+    //             "u32",
+    //             MAX_GLOBAL_REJECTS,
+    //         ),
+    //         MAX_FLAT_MAP_REGENS => parse_or_warn(
+    //             &value,
+    //             &mut result.max_flat_map_regens,
+    //             "u32",
+    //             MAX_FLAT_MAP_REGENS,
+    //         ),
+    //         #[cfg(feature = "fork")]
+    //         FORK => parse_or_warn(&value, &mut result.fork, "bool", FORK),
+    //         #[cfg(feature = "timeout")]
+    //         TIMEOUT => {
+    //             parse_or_warn(&value, &mut result.timeout, "timeout", TIMEOUT)
+    //         }
+    //         MAX_SHRINK_TIME => parse_or_warn(
+    //             &value,
+    //             &mut result.max_shrink_time,
+    //             "u32",
+    //             MAX_SHRINK_TIME,
+    //         ),
+    //         MAX_SHRINK_ITERS => parse_or_warn(
+    //             &value,
+    //             &mut result.max_shrink_iters,
+    //             "u32",
+    //             MAX_SHRINK_ITERS,
+    //         ),
+    //         VERBOSE => {
+    //             parse_or_warn(&value, &mut result.verbose, "u32", VERBOSE)
+    //         }
+    //         RNG_ALGORITHM => parse_or_warn(
+    //             &value,
+    //             &mut result.rng_algorithm,
+    //             "RngAlgorithm",
+    //             RNG_ALGORITHM,
+    //         ),
 
-            _ => {
-                if var.starts_with("PROPTEST_") {
-                    eprintln!("proptest: Ignoring unknown env-var {}.", var);
-                }
-            }
-        }
-    }
+    //         _ => {
+    //             if var.starts_with("PROPTEST_") {
+    //                 eprintln!("proptest: Ignoring unknown env-var {}.", var);
+    //             }
+    //         }
+    //     }
+    // }
+
 
     result
 }

@@ -240,7 +240,8 @@ where
         return result.clone();
     }
 
-    let time_start = time::Instant::now();
+    // TODO running this on the IC results in: time not implemented on this platform
+    // let time_start = time::Instant::now();
 
     let mut result = unwrap_or!(
         panic::catch_unwind(AssertUnwindSafe(|| test(case))),
@@ -253,18 +254,19 @@ where
     // If there is a timeout and we exceeded it, fail the test here so we get
     // consistent behaviour. (The parent process cannot precisely time the test
     // cases itself.)
-    if timeout > 0 && result.is_ok() {
-        let elapsed = time_start.elapsed();
-        let elapsed_millis = elapsed.as_secs() as u32 * 1000
-            + elapsed.subsec_nanos() / 1_000_000;
+    // TODO running this on the IC results in: time not implemented on this platform
+    // if timeout > 0 && result.is_ok() {
+    //     let elapsed = time_start.elapsed();
+    //     let elapsed_millis = elapsed.as_secs() as u32 * 1000
+    //         + elapsed.subsec_nanos() / 1_000_000;
 
-        if elapsed_millis > timeout {
-            result = Err(TestCaseError::fail(format!(
-                "Timeout of {} ms exceeded: test took {} ms",
-                timeout, elapsed_millis
-            )));
-        }
-    }
+    //     if elapsed_millis > timeout {
+    //         result = Err(TestCaseError::fail(format!(
+    //             "Timeout of {} ms exceeded: test took {} ms",
+    //             timeout, elapsed_millis
+    //         )));
+    //     }
+    // }
 
     result_cache.put(cache_key, &result);
     fork_output.append(&result);
@@ -722,31 +724,37 @@ impl TestRunner {
         result_cache: &mut dyn ResultCache,
         fork_output: &mut ForkOutput,
     ) -> Option<Reason> {
-        #[cfg(feature = "std")]
-        use std::time;
+        // TODO running this on the IC results in: time not implemented on this platform
+        // #[cfg(feature = "std")]
+        // use std::time;
 
         let mut last_failure = None;
         let mut iterations = 0;
-        #[cfg(feature = "std")]
-        let start_time = time::Instant::now();
+
+        // TODO running this on the IC results in: time not implemented on this platform
+        // #[cfg(feature = "std")]
+        // let start_time = time::Instant::now();
 
         if case.simplify() {
             loop {
                 #[cfg(feature = "std")]
-                let timed_out = if self.config.max_shrink_time > 0 {
-                    let elapsed = start_time.elapsed();
-                    let elapsed_ms = elapsed
-                        .as_secs()
-                        .saturating_mul(1000)
-                        .saturating_add(elapsed.subsec_millis().into());
-                    if elapsed_ms > self.config.max_shrink_time as u64 {
-                        Some(elapsed_ms)
-                    } else {
-                        None
-                    }
-                } else {
-                    None
-                };
+                let timed_out: Option<u64> = None;
+                // TODO running this on the IC results in: time not implemented on this platform
+                // let timed_out = if self.config.max_shrink_time > 0 {
+                //     let elapsed = start_time.elapsed();
+                //     let elapsed_ms = elapsed
+                //         .as_secs()
+                //         .saturating_mul(1000)
+                //         .saturating_add(elapsed.subsec_millis().into());
+                //     if elapsed_ms > self.config.max_shrink_time as u64 {
+                //         Some(elapsed_ms)
+                //     } else {
+                //         None
+                //     }
+                // } else {
+                //     None
+                // };
+                
                 #[cfg(not(feature = "std"))]
                 let timed_out: Option<u64> = None;
 
